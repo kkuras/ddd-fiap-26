@@ -7,11 +7,10 @@ public class BalancoDiario {
     public void doAdd(Veiculo obj) {
         qtdeCarros++;
         total += obj.doTotal();
-
     }
 
     public String doGerarRelatorio() {
         return "carros: " + qtdeCarros +
-                "\ntotal:" + total;
+                "\ntotal: " + total;
     }
 }

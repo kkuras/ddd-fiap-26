@@ -21,11 +21,4 @@ public class Segurado extends Veiculo implements ISeguroService{
         return super.doTotal() * seguro / 100;
     }
 
-    public double getSeguro() {
-        return seguro;
-    }
-
-    public void setSeguro(double seguro) {
-        this.seguro = seguro;
-    }
 }
