@@ -249,6 +249,62 @@ public class main {
         Serie got = new Serie("Game of Thrones", 2011, 57,
                 ClassificacaoEnum.DEZOITO, false, 10, 57, tempGOT);
         series.add(got);
+
+
+
+        System.out.println("==================================");
+        for (Serie serie : series){
+            System.out.println("serie: " + serie.getNome());
+            for (Temporada temporada : serie.getTemporadas()) {
+                System.out.println("temporada: " + temporada.getNumeroTemporada());
+                for (Episodio episodio : temporada.getEpisodios()){
+                    System.out.println("ep: " + episodio.getNumero() + " - " + episodio.getNome());
+                }
+            }
+        }
+        series.forEach(serie -> {
+            System.out.println("serie: " + serie.getNome());
+            serie.getTemporadas().forEach(temporada -> {
+                System.out.println("temporada: " + temporada.getNumeroTemporada());
+                temporada.getEpisodios().forEach(episodio -> {
+                    System.out.println("ep: " + episodio.getNumero() + " - " + episodio.getNome());
+                });
+            });
+        });
+
+
+        System.out.println("==================================");
+        for (Serie serie : series) {
+            if (serie.isAtiva()) {
+                System.out.println("serie ativa: " + serie.getNome());
+            }
+        }
+
+        series.forEach(serie -> {
+            if (serie.isAtiva()) {
+                System.out.println("serie ativa: " + serie.getNome());
+            }
+        });
+
+        System.out.println("==================================");
+        for (Serie s : series) {
+            System.out.println(s.getNome() + " tem " + s.getTemporadas().size() + "temporadas");
+        }
+
+        System.out.println("==================================");
+        String serieescolhida = "coco 2";
+        for (Serie s : series) {
+            if (!s.isAtiva() && s.getNome().equalsIgnoreCase(serieescolhida)) {
+                System.out.println("finalizada: " + s.getNome());
+                for (Temporada temporada : s.getTemporadas()) {
+                    System.out.println("temporada: " + s.getNumeroTemporada());
+                    for (Episodio episodio : temporada.getEpisodios()) {
+                        System.out.println("ep " + episodio.getNumero() + " - " + episodio.getNome());
+                    }
+                }} else {
+                System.out.println("serie " + serieescolhida + "nao finaziou");
+            }
+        }
     }
 
 }
