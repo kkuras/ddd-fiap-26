@@ -13,7 +13,8 @@ public class Curso implements Exibivel {
     private Professor professorResponsavel;
     private List<Aluno> listaAluno;
 
-    public Curso(String nome, NivelCurso nivel, Professor professorResponsavel, List<Aluno> listaAluno) {
+    public Curso(String nome, NivelCurso nivel,
+                 Professor professorResponsavel) {
         this.nome = nome;
         this.nivel = nivel;
         this.professorResponsavel = professorResponsavel;
@@ -33,6 +34,38 @@ public class Curso implements Exibivel {
         }
     }
 
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public NivelCurso getNivel() {
+        return nivel;
+    }
+
+    public void setNivel(NivelCurso nivel) {
+        this.nivel = nivel;
+    }
+
+    public Professor getProfessorResponsavel() {
+        return professorResponsavel;
+    }
+
+    public void setProfessorResponsavel(Professor professorResponsavel) {
+        this.professorResponsavel = professorResponsavel;
+    }
+
+    public List<Aluno> getListaAluno() {
+        return listaAluno;
+    }
+
+    public void setListaAluno(List<Aluno> listaAluno) {
+        this.listaAluno = listaAluno;
+    }
 
     @Override
     public void exibirInformacoes() {
