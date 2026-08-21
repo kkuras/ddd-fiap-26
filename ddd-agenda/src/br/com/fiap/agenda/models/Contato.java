@@ -10,8 +10,7 @@ public class Contato {
 
     @Override
     public String toString() {
-        return "Contato: " +
-                "\nnome: " + nome +
+        return  "nome: " + nome +
                 " - celular: " + celular +
                 " - email: " + email +
                 " - instagram: " + instagram +
@@ -65,4 +64,5 @@ public class Contato {
     public void setTipo(String tipo) {
         this.tipo = tipo;
     }
+
 }
