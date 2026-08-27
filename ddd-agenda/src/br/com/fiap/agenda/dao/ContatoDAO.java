@@ -2,6 +2,7 @@ package br.com.fiap.agenda.dao;
 
 
 import br.com.fiap.agenda.models.Contato;
+import br.com.fiap.agenda.models.Endereco;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -21,8 +22,8 @@ public class ContatoDAO {
         PreparedStatement comandoSQL = null;
         try {
             String sql = "insert into tbl_contato (ID_CONTATO, NOME_CONTATO, CELULAR_CONTATO, " +
-                    "EMAIL_CONTATO, INSTAGRAM, TIPO)" +
-                    "values(?, ?, ?, ?, ?, ?)";
+                    "EMAIL_CONTATO, INSTAGRAM, TIPO, codigo)" +
+                    "values(?, ?, ?, ?, ?, ?, ?)";
 
             comandoSQL = conexao.prepareStatement(sql);
             comandoSQL.setInt(1, contato.getId());
@@ -31,6 +32,7 @@ public class ContatoDAO {
             comandoSQL.setString(4, contato.getEmail());
             comandoSQL.setString(5, contato.getInstagram());
             comandoSQL.setString(6, contato.getTipo());
+            comandoSQL.setInt(7, contato.getEndereco().getCodigo());
             comandoSQL.executeUpdate();
             comandoSQL.close();
             conexao.close();
@@ -45,6 +47,7 @@ public class ContatoDAO {
         conexao = ConnectionFactory.obterconexao();
         PreparedStatement ps = null;
         Contato contato = new Contato();
+        EnderecoDAO enderecoDAO = new EnderecoDAO();
 
         try {
             ps = conexao.prepareStatement("select * from TBL_CONTATO where id_contato = ?");
@@ -57,6 +60,10 @@ public class ContatoDAO {
                 contato.setEmail(rs.getString(4));
                 contato.setInstagram(rs.getString(5));
                 contato.setTipo(rs.getString(6));
+                int codigo = rs.getInt(7);
+                Endereco endereco = new Endereco();
+                endereco = enderecoDAO.buscarID(codigo);
+                contato.setEndereco(endereco);
             }
             ps.close();
             conexao.close();
