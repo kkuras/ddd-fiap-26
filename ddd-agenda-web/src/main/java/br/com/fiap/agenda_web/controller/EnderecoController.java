@@ -1,6 +1,5 @@
 package br.com.fiap.agenda_web.controller;
 
-import br.com.fiap.agenda_web.dao.EnderecoDAO;
 import br.com.fiap.agenda_web.models.Endereco;
 import br.com.fiap.agenda_web.service.EnderecoService;
 import org.springframework.web.bind.annotation.*;
