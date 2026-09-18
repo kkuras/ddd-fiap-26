@@ -9,17 +9,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Filme {
-    private Long id;1
-    private String nome;2
-    private Integer duracao;3
-    private int ano;4
-    private String cpaa;5
-    private String diretor;6
-    private String elenco;7
-    private String descricao;8
-    private double avaliacao;9
-    private CategoriaFilmeEnum categoria;10
-    private ClassificacaoIndicativaEnum classificacao;11
-    private SimNaoEnum emCartaz;12
+    private int id;
+    private String nome;
+    private Integer duracao;
+    private int ano;
+    private String capa;
+    private String diretor;
+    private String elenco;
+    private String descricao;
+    private double avaliacao;
+    private CategoriaFilmeEnum categoria;
+    private ClassificacaoIndicativaEnum classificacao;
+    private SimNaoEnum emCartaz;
 
 }
