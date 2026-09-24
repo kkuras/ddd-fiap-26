@@ -20,6 +20,12 @@ public class FilmeService {
         if (filme == null)
             throw new IllegalArgumentException("Filme não pode ser nulo");
 
+        if (filme.getCategoria() == null)
+            throw new IllegalArgumentException("Categoria é obrigatória");
+
+        if (filme.getEmCartaz() == null)
+            throw new IllegalArgumentException("Campo 'em cartaz' é obrigatório");
+
         filmeDAO.cadastrar(filme);
     }
 
@@ -35,7 +41,7 @@ public class FilmeService {
         return filmes;
     }
 
-    public List<Filme> buscarEmCartaz(){
+    public List<Filme> filmesEmCartaz(){
         var filmes = filmeDAO.buscarEmCartaz();
 
         if (filmes.isEmpty())
@@ -71,33 +77,38 @@ public class FilmeService {
     public Filme buscarPorId(Integer id){
         if (id == null)
             throw new IllegalArgumentException("Id não pode ser nulo");
-
         var filme = filmeDAO.buscarPorId(id);
 
         if (filme.getId() == 0)
             throw new FilmeNaoEncontradoException("Filme não encontrado");
 
-        return filme;
+         return filme;
     }
 
+
+
     public void alterar(Filme filme){
+
         if (filme == null)
             throw new IllegalArgumentException("Filme não pode ser nulo");
-        if (filme.getId() == 0)
-            throw new IllegalArgumentException("Id do filme deve ser informado");
 
-        buscarPorId(filme.getId());
+        var filmeExistente = filmeDAO.buscarPorId(filme.getId());
 
-        filmeDAO.alterar(filme);
+        if (filmeExistente.getId() == filme.getId()) {
+            filmeDAO.alterar(filme);
+        } else {
+            throw new IllegalArgumentException("filme nao acho");
+        }
     }
 
     public void excluir(Integer id){
-        if (id == null)
-            throw new IllegalArgumentException("Id não pode ser nulo");
+        var filme = filmeDAO.buscarPorId(id);
 
-        buscarPorId(id);
-
-        filmeDAO.excluir(id);
+        if (filme.getId() == id) {
+            filmeDAO.excluir(id);
+        } else {
+            throw new IllegalArgumentException("filme nao acho");
+        }
     }
 
 
