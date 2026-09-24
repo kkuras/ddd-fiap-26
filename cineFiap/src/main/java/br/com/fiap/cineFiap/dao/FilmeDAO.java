@@ -15,229 +15,280 @@ import java.util.List;
 public class FilmeDAO {
     private Connection conexao;
 
-    public void cadastrar(Filme filme) {
-        conexao = ConnectionFactory.obterconexao();
-        PreparedStatement comandoSQL = null;
-        try {
-            String sql = "INSERT INTO tbl_filmes (ID_FILME, TX_NOME, NR_DURACAO, TP_CATEGORIA, TP_CLASSIFICACAO, " +
-                    "NR_ANO, TX_CAPA, TX_DIRETOR, TX_ELENCO, TX_DESCRICAO, NR_AVALIACAO, CHK_EM_CARTAZ) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public void cadastrar(Filme filme){
 
-            comandoSQL = conexao.prepareStatement(sql);
-            comandoSQL.setInt(1, filme.getId());
-            comandoSQL.setString(2, filme.getNome());
-            comandoSQL.setInt(3, filme.getDuracao());
-            comandoSQL.setString(4, String.valueOf(filme.getCategoria()));
-            comandoSQL.setString(5, String.valueOf(filme.getClassificacao()));
-            comandoSQL.setInt(6, filme.getAno());
-            comandoSQL.setString(7, filme.getCapa());
-            comandoSQL.setString(8, filme.getDiretor());
-            comandoSQL.setString(9, filme.getElenco());
-            comandoSQL.setString(10, filme.getDescricao());
-            comandoSQL.setDouble(11, filme.getAvaliacao());
-            comandoSQL.setString(12, String.valueOf(filme.getEmCartaz()));
+        if (filme.getDuracao() <= 0){
+            System.out.println("ERRO: A duração deve ser maior que zero.");
+            return;
+        }
+        if (filme.getClassificacao() == null ) {
+            System.out.println("ERRO: A classificação indicativa é obrigatória");
+            return;
+        }
+        if (filme.getCategoria() == null ) {
+            System.out.println("ERRO: A categoria é obrigatória");
+            return;
+        }
 
-            comandoSQL.executeUpdate();
-            comandoSQL.close();
+        conexao = ConnectionFactory.obterConexao();
+        PreparedStatement comandoSql = null;
+
+        try{
+            String sql = "insert into tbl_filme (ID_FILME, TX_NOME, NR_DURACAO," +
+                    "TP_CATEGORIA, TP_CLASSIFICACAO," +
+                    "NR_ANO, TX_CAPA, TX_DIRETOR," +
+                    "TX_ELENCO, TX_DESCRICAO, NR_AVALIACAO, CHK_EM_CARTAZ)" +
+                    "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? , ?)";
+
+            comandoSql = conexao.prepareStatement(sql);
+
+            comandoSql.setInt(1, filme.getId());
+            comandoSql.setString(2, filme.getNome());
+            comandoSql.setInt(3, filme.getDuracao());
+            comandoSql.setString(4, filme.getCategoria().toString());
+            comandoSql.setString(5, filme.getClassificacao().toString());
+            comandoSql.setInt(6, filme.getAno());
+            comandoSql.setString(7, filme.getCapa());
+            comandoSql.setString(8, filme.getDiretor());
+            comandoSql.setString(9, filme.getElenco());
+            comandoSql.setString(10, filme.getDescricao());
+            comandoSql.setDouble(11, filme.getAvaliacao());
+            comandoSql.setString(12, filme.getEmCartaz().toString());
+
+            comandoSql.executeUpdate();
+            comandoSql.close();
             conexao.close();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
 
-    public List<Filme> buscarPorCategoria(CategoriaFilmeEnum categoria) {
-        List<Filme> listaFilmes = new ArrayList<>();
-        conexao = ConnectionFactory.obterconexao();
-        PreparedStatement comandoSQL = null;
-        ResultSet rs = null;
+    public List<Filme> buscarPorCategoria(String categoria) {
+        conexao = ConnectionFactory.obterConexao();;
+        PreparedStatement ps = null;
+        List<Filme> filmes = new ArrayList<>();
 
-        try {
-            String sql = "SELECT * FROM tbl_filmes WHERE TP_CATEGORIA = ?";
-            comandoSQL = conexao.prepareStatement(sql);
-            comandoSQL.setString(1, String.valueOf(categoria));
+        try{
+            ps = conexao.prepareStatement("select * from TBL_FILME where TP_CATEGORIA = ?");
+            ps.setString(1, categoria);
+            ResultSet rs = ps.executeQuery();
 
-            rs = comandoSQL.executeQuery();
+            while(rs.next()) {
 
-            while (rs.next()) {
                 Filme filme = new Filme();
-                filme.setId(rs.getInt("ID_FILME"));
-                filme.setNome(rs.getString("TX_NOME"));
-                filme.setDuracao(rs.getInt("NR_DURACAO"));
-                filme.setAno(rs.getInt("NR_ANO"));
-                filme.setCapa(rs.getString("TX_CAPA"));
-                filme.setDiretor(rs.getString("TX_DIRETOR"));
-                filme.setElenco(rs.getString("TX_ELENCO"));
-                filme.setDescricao(rs.getString("TX_DESCRICAO"));
-                filme.setAvaliacao(rs.getDouble("NR_AVALIACAO"));
 
-                if (rs.getString("TP_CATEGORIA") != null) {
-                    filme.setCategoria(CategoriaFilmeEnum.valueOf(rs.getString("TP_CATEGORIA")));
-                }
-                if (rs.getString("TP_CLASSIFICACAO") != null) {
-                    filme.setClassificacao(ClassificacaoIndicativaEnum.valueOf(rs.getString("TP_CLASSIFICACAO")));
-                }
-                if (rs.getString("CHK_EM_CARTAZ") != null) {
-                    filme.setEmCartaz(SimNaoEnum.valueOf(rs.getString("CHK_EM_CARTAZ")));
-                }
+                filme.setId(rs.getInt(1));
+                filme.setNome(rs.getString(2));
+                filme.setDuracao(rs.getInt(3));
+                filme.setCategoria(CategoriaFilmeEnum.valueOf(rs.getString(4)));
+                filme.setClassificacao(ClassificacaoIndicativaEnum.valueOf(rs.getString(5)));
+                filme.setAno(rs.getInt(6));
+                filme.setCapa(rs.getString(7));
+                filme.setDiretor(rs.getString(8));
+                filme.setElenco(rs.getString(9));
+                filme.setDescricao(rs.getString(10));
+                filme.setAvaliacao(rs.getDouble(11));
+                filme.setEmCartaz(SimNaoEnum.valueOf(rs.getString(12)));
 
-                listaFilmes.add(filme);
+                filmes.add(filme);
+
             }
 
-            rs.close();
-            comandoSQL.close();
+            ps.close();
             conexao.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+        return filmes;
+    }
 
-        return listaFilmes;
+
+    public List<Filme> buscarEmCartaz(){
+        conexao = ConnectionFactory.obterConexao();
+        PreparedStatement ps = null;
+        List<Filme> filmes = new ArrayList<>();
+
+        try {
+            ps = conexao.prepareStatement("select * from TBL_FILME where CHK_EM_CARTAZ = ?");
+            ps.setString(1, "SIM");
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+
+                Filme filme = new Filme();
+
+                filme.setId(rs.getInt(1));
+                filme.setNome(rs.getString(2));
+                filme.setDuracao(rs.getInt(3));
+                filme.setCategoria(CategoriaFilmeEnum.valueOf(rs.getString(4)));
+                filme.setClassificacao(ClassificacaoIndicativaEnum.valueOf(rs.getString(5)));
+                filme.setAno(rs.getInt(6));
+                filme.setCapa(rs.getString(7));
+                filme.setDiretor(rs.getString(8));
+                filme.setElenco(rs.getString(9));
+                filme.setDescricao(rs.getString(10));
+                filme.setAvaliacao(rs.getDouble(11));
+                filme.setEmCartaz(SimNaoEnum.valueOf(rs.getString(12)));
+
+                filmes.add(filme);
+            }
+
+            ps.close();
+            conexao.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return filmes;
+    }
+
+    public List<Filme> buscarPorNome(String nome) {
+
+        conexao = ConnectionFactory.obterConexao();
+        PreparedStatement ps = null;
+        List<Filme> filmes = new ArrayList<>();
+
+        try{
+            ps = conexao.prepareStatement("select * from TBL_FILME where TX_NOME = ?");
+            ps.setString(1, nome);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+
+                Filme filme = new Filme();
+
+                filme.setId(rs.getInt(1));
+                filme.setNome(rs.getString(2));
+                filme.setDuracao(rs.getInt(3));
+                filme.setCategoria(CategoriaFilmeEnum.valueOf(rs.getString(4)));
+                filme.setClassificacao(ClassificacaoIndicativaEnum.valueOf(rs.getString(5)));
+                filme.setAno(rs.getInt(6));
+                filme.setCapa(rs.getString(7));
+                filme.setDiretor(rs.getString(8));
+                filme.setElenco(rs.getString(9));
+                filme.setDescricao(rs.getString(10));
+                filme.setAvaliacao(rs.getDouble(11));
+                filme.setEmCartaz(SimNaoEnum.valueOf(rs.getString(12)));
+
+                filmes.add(filme);
+            }
+
+            ps.close();
+            conexao.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return filmes;
+    }
+
+
+    public List<Filme> buscarPorAno(int ano) {
+        conexao = ConnectionFactory.obterConexao();
+        PreparedStatement ps = null;
+        List<Filme> filmes = new ArrayList<>();
+
+        try{
+            ps = conexao.prepareStatement("select * from TBL_FILME where NR_ANO = ?");
+            ps.setInt(1, ano);
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+
+                Filme filme = new Filme();
+
+                filme.setId(rs.getInt(1));
+                filme.setNome(rs.getString(2));
+                filme.setDuracao(rs.getInt(3));
+                filme.setCategoria(CategoriaFilmeEnum.valueOf(rs.getString(4)));
+                filme.setClassificacao(ClassificacaoIndicativaEnum.valueOf(rs.getString(5)));
+                filme.setAno(rs.getInt(6));
+                filme.setCapa(rs.getString(7));
+                filme.setDiretor(rs.getString(8));
+                filme.setElenco(rs.getString(9));
+                filme.setDescricao(rs.getString(10));
+                filme.setAvaliacao(rs.getDouble(11));
+                filme.setEmCartaz(SimNaoEnum.valueOf(rs.getString(12)));
+
+                filmes.add(filme);
+            }
+
+            ps.close();
+            conexao.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return filmes;
     }
 
     public Filme buscarPorId(int id) {
-        Filme filme = null;
-        conexao = ConnectionFactory.obterconexao();
-        PreparedStatement comandoSQL = null;
-        ResultSet rs = null;
+        conexao = ConnectionFactory.obterConexao();
+        PreparedStatement ps = null;
 
+        Filme filme = new Filme();
         try {
-            String sql = "SELECT * FROM tbl_filmes WHERE ID_FILME = ?";
-            comandoSQL = conexao.prepareStatement(sql);
-            comandoSQL.setInt(1, id);
-
-            rs = comandoSQL.executeQuery();
-
+            String sql = "SELECT * FROM tbl_filme WHERE ID_FILME = ?";
+            ps = conexao.prepareStatement(sql);
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                filme = new Filme();
-                filme.setId(rs.getInt("ID_FILME"));
-                filme.setNome(rs.getString("TX_NOME"));
-                filme.setDuracao(rs.getInt("NR_DURACAO"));
-                filme.setAno(rs.getInt("NR_ANO"));
-                filme.setCapa(rs.getString("TX_CAPA"));
-                filme.setDiretor(rs.getString("TX_DIRETOR"));
-                filme.setElenco(rs.getString("TX_ELENCO"));
-                filme.setDescricao(rs.getString("TX_DESCRICAO"));
-                filme.setAvaliacao(rs.getDouble("NR_AVALIACAO"));
-
-                if (rs.getString("TP_CATEGORIA") != null) {
-                    filme.setCategoria(CategoriaFilmeEnum.valueOf(rs.getString("TP_CATEGORIA")));
-                }
-                if (rs.getString("TP_CLASSIFICACAO") != null) {
-                    filme.setClassificacao(ClassificacaoIndicativaEnum.valueOf(rs.getString("TP_CLASSIFICACAO")));
-                }
-                if (rs.getString("CHK_EM_CARTAZ") != null) {
-                    filme.setEmCartaz(SimNaoEnum.valueOf(rs.getString("CHK_EM_CARTAZ")));
-                }
+                filme.setId(rs.getInt(1));
+                filme.setNome(rs.getString(2));
+                filme.setDuracao(rs.getInt(3));
+                filme.setCategoria(CategoriaFilmeEnum.valueOf(rs.getString(4)));
+                filme.setClassificacao(ClassificacaoIndicativaEnum.valueOf(rs.getString(5)));
+                filme.setAno(rs.getInt(6));
+                filme.setCapa(rs.getString(7));
+                filme.setDiretor(rs.getString(8));
+                filme.setElenco(rs.getString(9));
+                filme.setDescricao(rs.getString(10));
+                filme.setAvaliacao(rs.getDouble(11));
+                filme.setEmCartaz(SimNaoEnum.valueOf(rs.getString(12)));
             }
-
-            rs.close();
-            comandoSQL.close();
+            ps.close();
             conexao.close();
-
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-
         return filme;
     }
 
-    public List<Filme> listar() {
-        List<Filme> listaFilmes = new ArrayList<>();
-        conexao = ConnectionFactory.obterconexao();
-        PreparedStatement comandoSQL = null;
-        ResultSet rs = null;
+    public void alterar(Filme filme)  {
+        conexao = ConnectionFactory.obterConexao(); PreparedStatement comandoSql = null; try { String sql = "UPDATE tbl_filme SET TX_NOME = ?, NR_DURACAO = ?, TP_CATEGORIA = ?, " +
+                "TX_DIRETOR = ?, TX_DESCRICAO = ?, NR_AVALIACAO = ?, CHK_EM_CARTAZ = ? WHERE ID_FILME = ?";
 
-        try {
-            String sql = "SELECT * FROM tbl_filmes";
-            comandoSQL = conexao.prepareStatement(sql);
-            rs = comandoSQL.executeQuery();
-
-            while (rs.next()) {
-                Filme filme = new Filme();
-                filme.setId(rs.getInt("ID_FILME"));
-                filme.setNome(rs.getString("TX_NOME"));
-                filme.setDuracao(rs.getInt("NR_DURACAO"));
-                filme.setAno(rs.getInt("NR_ANO"));
-                filme.setCapa(rs.getString("TX_CAPA"));
-                filme.setDiretor(rs.getString("TX_DIRETOR"));
-                filme.setElenco(rs.getString("TX_ELENCO"));
-                filme.setDescricao(rs.getString("TX_DESCRICAO"));
-                filme.setAvaliacao(rs.getDouble("NR_AVALIACAO"));
-
-                if (rs.getString("TP_CATEGORIA") != null) {
-                    filme.setCategoria(CategoriaFilmeEnum.valueOf(rs.getString("TP_CATEGORIA")));
-                }
-                if (rs.getString("TP_CLASSIFICACAO") != null) {
-                    filme.setClassificacao(ClassificacaoIndicativaEnum.valueOf(rs.getString("TP_CLASSIFICACAO")));
-                }
-                if (rs.getString("CHK_EM_CARTAZ") != null) {
-                    filme.setEmCartaz(SimNaoEnum.valueOf(rs.getString("CHK_EM_CARTAZ")));
-                }
-
-                listaFilmes.add(filme);
-            }
-
-            rs.close();
-            comandoSQL.close();
+            comandoSql = conexao.prepareStatement(sql);
+            comandoSql.setString(1, filme.getNome());
+            comandoSql.setInt(2, filme.getDuracao());
+            comandoSql.setString(3, filme.getCategoria().toString());
+            comandoSql.setString(4, filme.getDiretor());
+            comandoSql.setString(5, filme.getDescricao());
+            comandoSql.setDouble(6, filme.getAvaliacao());
+            comandoSql.setString(7, filme.getEmCartaz().toString());
+            comandoSql.setInt(8, filme.getId());
+            comandoSql.executeUpdate(); comandoSql.close();
             conexao.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return listaFilmes;
-    }
-
-    public void atualizar(Filme filme) {
-        conexao = ConnectionFactory.obterconexao();
-        PreparedStatement comandoSQL = null;
-
-        try {
-            String sql = "UPDATE tbl_filmes SET TX_NOME = ?, NR_DURACAO = ?, TP_CATEGORIA = ?, " +
-                    "TP_CLASSIFICACAO = ?, NR_ANO = ?, TX_CAPA = ?, TX_DIRETOR = ?, TX_ELENCO = ?, " +
-                    "TX_DESCRICAO = ?, NR_AVALIACAO = ?, CHK_EM_CARTAZ = ? WHERE ID_FILME = ?";
-
-            comandoSQL = conexao.prepareStatement(sql);
-            comandoSQL.setString(1, filme.getNome());
-            comandoSQL.setInt(2, filme.getDuracao());
-            comandoSQL.setString(3, String.valueOf(filme.getCategoria()));
-            comandoSQL.setString(4, String.valueOf(filme.getClassificacao()));
-            comandoSQL.setInt(5, filme.getAno());
-            comandoSQL.setString(6, filme.getCapa());
-            comandoSQL.setString(7, filme.getDiretor());
-            comandoSQL.setString(8, filme.getElenco());
-            comandoSQL.setString(9, filme.getDescricao());
-            comandoSQL.setDouble(10, filme.getAvaliacao());
-            comandoSQL.setString(11, String.valueOf(filme.getEmCartaz()));
-            comandoSQL.setLong(12, filme.getId());
-
-            comandoSQL.executeUpdate();
-            comandoSQL.close();
-            conexao.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void deletar(int id) {
-        conexao = ConnectionFactory.obterconexao();
-        PreparedStatement comandoSQL = null;
-
+    public void excluir(Integer id) {
+        conexao = ConnectionFactory.obterConexao();
+        PreparedStatement comandoSql = null;
         try {
-            String sql = "DELETE FROM tbl_filmes WHERE ID_FILME = ?";
-
-            comandoSQL = conexao.prepareStatement(sql);
-            comandoSQL.setLong(1, id);
-
-            comandoSQL.executeUpdate();
-            comandoSQL.close();
-            conexao.close();
-
+            String sql = "DELETE FROM tbl_filme WHERE ID_FILME = ?";
+            comandoSql = conexao.prepareStatement(sql);
+            comandoSql.setInt(1, id);
+            comandoSql.executeUpdate();
+            comandoSql.close(); conexao.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
+
 }
