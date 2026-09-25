@@ -40,6 +40,12 @@ public class FilmeController {
 
     }
 
+    @GetMapping
+    public ResponseEntity <List<Filme>> listar {
+        return ResponseEntity.ok(service.listartodos());
+
+    }
+
 
 
 
