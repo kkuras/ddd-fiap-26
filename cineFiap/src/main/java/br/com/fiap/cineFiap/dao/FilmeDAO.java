@@ -291,5 +291,43 @@ public class FilmeDAO {
         }
     }
 
+    public List<Filme> listarTodos() {
+        conexao = ConnectionFactory.obterConexao();
+        PreparedStatement ps = null;
+        List<Filme> filmes = new ArrayList<>();
+
+        try {
+            ps = conexao.prepareStatement("select * from TBL_FILME");
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+
+                Filme filme = new Filme();
+
+                filme.setId(rs.getInt(1));
+                filme.setNome(rs.getString(2));
+                filme.setDuracao(rs.getInt(3));
+                filme.setCategoria(CategoriaFilmeEnum.valueOf(rs.getString(4)));
+                filme.setClassificacao(ClassificacaoIndicativaEnum.valueOf(rs.getString(5)));
+                filme.setAno(rs.getInt(6));
+                filme.setCapa(rs.getString(7));
+                filme.setDiretor(rs.getString(8));
+                filme.setElenco(rs.getString(9));
+                filme.setDescricao(rs.getString(10));
+                filme.setAvaliacao(rs.getDouble(11));
+                filme.setEmCartaz(SimNaoEnum.valueOf(rs.getString(12)));
+
+                filmes.add(filme);
+            }
+
+            ps.close();
+            conexao.close();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return filmes;
+    }
+
 
 }

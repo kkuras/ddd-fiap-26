@@ -111,6 +111,15 @@ public class FilmeService {
         }
     }
 
+    public List<Filme> listarTodos() {
+        var filmes = filmeDAO.listarTodos();
+
+        if (filmes.isEmpty())
+            throw new FilmeNaoEncontradoException("Nenhum filme cadastrado");
+
+        return filmes;
+    }
+
 
 
 }
