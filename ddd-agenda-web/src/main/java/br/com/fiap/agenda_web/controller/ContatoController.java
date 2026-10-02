@@ -1,6 +1,8 @@
 package br.com.fiap.agenda_web.controller;
 
+import br.com.fiap.agenda_web.dto.ContatoRequest;
 import br.com.fiap.agenda_web.dto.ContatoRequestDTO;
+import br.com.fiap.agenda_web.dto.ContatoResponse;
 import br.com.fiap.agenda_web.dto.ContatoResponseDTO;
 import br.com.fiap.agenda_web.mapper.ContatoMapper;
 import br.com.fiap.agenda_web.models.Contato;
@@ -16,10 +18,13 @@ public class ContatoController {
     private ContatoService contatoService = new ContatoService();
 
     @GetMapping
-    public List<ContatoResponseDTO> listar() {
+    public List<ContatoResponse> listar() {
 
 
-        return contatoService.listar().stream().map(ContatoMapper::toDTO).toList();
+        return contatoService.listar()
+                .stream()
+                .map(ContatoMapper::toRecordDTO)
+                .toList();
     }
 
     @GetMapping("/{id}")
@@ -29,15 +34,15 @@ public class ContatoController {
     }
 
     @PostMapping
-    public void cadastrar(@RequestBody ContatoRequestDTO dto) {
-        Contato contato = ContatoMapper.toEntity(dto);
+    public void cadastrar(@RequestBody ContatoRequest dto) {
+        Contato contato = ContatoMapper.recordToEntity(dto);
         contatoService.cadastrar(contato);
     }
 
     @PutMapping("/{id}")
     public void atualizar(@PathVariable int id,
-                          @RequestBody ContatoRequestDTO dto) {
-        Contato contato = ContatoMapper.toEntity(dto);
+                          @RequestBody ContatoRequest dto) {
+        Contato contato = ContatoMapper.recordToEntity(dto);
         contatoService.atualizar(id, contato);
     }
 
