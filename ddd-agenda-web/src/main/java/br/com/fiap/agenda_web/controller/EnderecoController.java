@@ -2,6 +2,7 @@ package br.com.fiap.agenda_web.controller;
 
 import br.com.fiap.agenda_web.models.Endereco;
 import br.com.fiap.agenda_web.service.EnderecoService;
+import br.com.fiap.agenda_web.service.ViaCepService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,7 +11,15 @@ import java.util.List;
 @RequestMapping("/enderecos")
 public class EnderecoController {
 
-    private EnderecoService enderecoService = new EnderecoService();
+    private ViaCepService viaCepService = new ViaCepService();
+    private EnderecoService enderecoService = new EnderecoService(viaCepService);
+
+
+    @GetMapping("cep/{cep}")
+    public Endereco consultarCep (@PathVariable String cep) {
+        var endereco = enderecoService.buscarPorCep(cep);
+        return endereco;
+    }
 
     @GetMapping
     public List<Endereco> listar(){

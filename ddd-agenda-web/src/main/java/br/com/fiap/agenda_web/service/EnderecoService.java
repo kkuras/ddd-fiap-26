@@ -9,8 +9,10 @@ import java.util.List;
 @Service
 public class EnderecoService {
     private final EnderecoDAO enderecoDAO;
+    private final ViaCepService viaCepService;
 
-    public EnderecoService() {
+    public EnderecoService(ViaCepService viaCepService) {
+        this.viaCepService = viaCepService;
         enderecoDAO = new EnderecoDAO();
     }
 
@@ -22,6 +24,19 @@ public class EnderecoService {
         var endereco = enderecoDAO.buscarPorId(id);
         return endereco;
     }
+
+    public Endereco buscarPorCep(String cep){
+        var enderecoDTO = viaCepService.consultarCep(cep);
+        var endereco = new Endereco();
+        endereco.setCep(enderecoDTO.cep());
+        endereco.setUf(enderecoDTO.uf());
+        endereco.setBairro(enderecoDTO.bairro());
+        endereco.setRua(enderecoDTO.logradouro());
+        endereco.setCidade(enderecoDTO.localidade());
+        endereco.setEstado(enderecoDTO.estado());
+        return endereco;
+    }
+
     public void cadastrar( Endereco endereco){
         if(endereco.getCep() != null )
             enderecoDAO.inserir(endereco);
